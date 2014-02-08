@@ -23,5 +23,5 @@ Recipe.prototype.make = function(inventory) {
 			inventory[key] -= this.requirements[key];
 		}
 	}
-	inventory[result]++;
+	inventory[this.result.id]++;
 }

@@ -1,8 +1,8 @@
-resourceTypes = array();
+resourceTypes = new Array();
 
 function ResourceType() {
-	this.id = resourceTypes.size();
-	resourceTypes.add(this);
+	this.id = resourceTypes.length;
+	resourceTypes.push(this);
 }
 
 function create(position) {

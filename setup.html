@@ -1,0 +1,27 @@
+<html><body>
+<script src="necessity.js"></script>
+<script src="resource.js"></script>
+<script src="resourceType.js"></script>
+<script src="recipe.js"></script>
+<script src="player.js"></script>
+<script>
+function setup() {
+	var WOOD = new ResourceType(); //wood
+	var DIRT = new ResourceType(); //dirt
+	var SLEP = new ResourceType(); //sleepysheep
+
+	var sheepy = new Recipe({0:2,1:2}, SLEP);
+
+	var player = new Player();
+	player.inventory[0] = 4;
+	player.inventory[1] = 2;
+	player.inventory[2] = 0;
+
+	alert(sheepy.canMake(player.inventory));
+	sheepy.make(player.inventory);
+	alert(JSON.stringify(player));
+	alert(sheepy.canMake(player.inventory));
+}
+setup();
+</script>
+</body></html>
