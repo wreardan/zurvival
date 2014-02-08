@@ -21,7 +21,7 @@ var sleepElement = document.getElementById("sleep")
 var sleepText = (sleepElement.firstElementChild||sleepElement.firstChild)
 
 var ClientPlayer = require('./www/clientplayer.js')
-var player = new ClientPlayer(healthText, heatText, sleepText)
+var playerData = new ClientPlayer(healthText, heatText, sleepText)
 
 module.exports = Client
 
@@ -157,8 +157,8 @@ Client.prototype.onServerUpdate = function(update) {
 
   var sleep = update.sleep*/
 
-  player.updateFromBundle(update.playerBundle)
-  player.update()
+  playerData.updateFromBundle(update.playerBundle)
+  playerData.update()
 }
 
 Client.prototype.lerpMe = function(position) {
