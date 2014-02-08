@@ -1,5 +1,5 @@
-require('./resourcetype.js');
-require('./necessity.js');
+var ResourceType = require('./resourcetype.js');
+var Necessity = require('./necessity.js');
 
 function Player() {
 	this.init();
@@ -13,8 +13,8 @@ Player.prototype.init = function() {
 }
 
 function makeInventory() {
-	var inv = new Array(resourceTypes.length);
-	for (var c = 0; c < resourceTypes.length; c++) {
+	var inv = new Array(ResourceType.resourceTypes.length);
+	for (var c = 0; c < ResourceType.resourceTypes.length; c++) {
 		inv[c] = 0;
 	}
 	return inv;
@@ -26,6 +26,7 @@ Player.prototype.makeResourceBundle = function() {
 	bundle.heat = this.heat.makeResourceBundle();
 	bundle.sleep = this.sleep.makeResourceBundle();
 	bundle.inventory = this.inventory.slice(0);
+	return bundle;
 }
 
 Player.prototype.updateFromBundle = function(bundle) {

@@ -35,8 +35,11 @@ Necessity.prototype.makeResourceBundle = function() {
 	var bundle = {};
 	bundle.time = Date.now() - this.lastTimeRefreshed;
 	bundle.total = this.timeToDeplete;
+	return bundle;
 }
 
 Necessity.prototype.updateFromBundle = function(resourceBundle) {
 	this.lastTimeRefreshed = Date.now() - resourceBundle.time;
 }
+
+module.exports = Necessity;

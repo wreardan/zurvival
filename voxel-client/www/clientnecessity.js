@@ -1,4 +1,4 @@
-require('../../necessity.js');
+var Necessity = require('../../necessity.js');
 
 function ClientNecessity(baseNecessity, domEl) {
 	this.lastTimeRefreshed = baseNecessity.lastTimeRefreshed;
@@ -10,5 +10,8 @@ ClientNecessity.prototype = new Necessity();
 
 ClientNecessity.prototype.update = function() {
 	Necessity.prototype.update.call(this); //super.update();
-	this.domEl.innerHTML = ""+this.getValue();
+	var percentage = Math.floor(this.getValue() * 100);
+	this.domEl.innerHTML = ""+percentage;
 }
+
+module.exports = ClientNecessity;

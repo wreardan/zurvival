@@ -1,5 +1,5 @@
-require('../../player.js');
-require('./clientnecessity.js');
+var Player = require('../../player.js');
+var ClientNecessity = require('./clientnecessity.js');
 
 function ClientPlayer(healthEl, heatEl, sleepEl) {
 	Player.call(this); //call superconstructor
@@ -15,3 +15,5 @@ ClientPlayer.prototype.update = function() {
 	this.heat.update();
 	this.sleep.update();
 }
+
+module.exports = ClientPlayer;

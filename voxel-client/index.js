@@ -20,7 +20,7 @@ var heatText = (heatElement.firstElementChild||heatElement.firstChild)
 var sleepElement = document.getElementById("sleep")
 var sleepText = (sleepElement.firstElementChild||sleepElement.firstChild)
 
-require('./clientPlayer.js')
+var ClientPlayer = require('./www/clientplayer.js')
 var player = new ClientPlayer(healthText, heatText, sleepText)
 
 module.exports = Client
