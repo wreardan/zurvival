@@ -1,4 +1,4 @@
-require('../necessity.js');
+require('../../necessity.js');
 
 function ClientNecessity(baseNecessity, domEl) {
 	this.lastTimeRefreshed = baseNecessity.lastTimeRefreshed;

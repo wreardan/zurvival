@@ -12,6 +12,17 @@ var player = require('voxel-player')
 var texturePath = "/textures/"
 //var game
 
+//Setup Player object
+var healthElement = document.getElementById("health")
+var healthText = (healthElement.firstElementChild||healthElement.firstChild)
+var heatElement = document.getElementById("heat")
+var heatText = (heatElement.firstElementChild||heatElement.firstChild)
+var sleepElement = document.getElementById("sleep")
+var sleepText = (sleepElement.firstElementChild||sleepElement.firstChild)
+
+require('./clientPlayer.js')
+var player = new ClientPlayer(healthText, heatText, sleepText)
+
 module.exports = Client
 
 function Client(server, game) {
@@ -139,12 +150,15 @@ Client.prototype.onServerUpdate = function(update) {
   // todo use server sent location
 
   //update necessities
-  var heat = update.heat
+  /*var heat = update.heat
   var heatElement = document.getElementById("heat")
   var heatText = (heatElement.firstElementChild||heatElement.firstChild)
   heatText.innerHTML = heat.toString()
 
-  var sleep = update.sleep
+  var sleep = update.sleep*/
+
+  player.updateFromBundle(update.playerBundle)
+  player.update()
 }
 
 Client.prototype.lerpMe = function(position) {

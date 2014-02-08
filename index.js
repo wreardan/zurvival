@@ -9,6 +9,7 @@ var crunch = require('voxel-crunch')
 var engine = require('voxel-engine')
 var texturePath = require('painterly-textures')(__dirname)
 var voxel = require('voxel')
+var Player = require('./player.js')
 
 module.exports = function() {
 
@@ -66,7 +67,8 @@ module.exports = function() {
         },
         health: 101,
         heat: 100,
-        sleep: 99
+        sleep: 99,
+        playerBundle: emitter.player.player.makeResourceBundle()
       }
     })
     broadcast(false, 'update', update)
@@ -117,7 +119,8 @@ module.exports = function() {
 
     emitter.player = {
       rotation: new game.THREE.Vector3(),
-      position: new game.THREE.Vector3()
+      position: new game.THREE.Vector3(),
+      player: new Player()
     }
 
     console.log(id, 'joined')

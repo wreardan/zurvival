@@ -25,3 +25,5 @@ Recipe.prototype.make = function(inventory) {
 	}
 	inventory[this.result.id]++;
 }
+
+module.exports = Recipe;

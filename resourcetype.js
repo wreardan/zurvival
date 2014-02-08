@@ -1,4 +1,4 @@
-require('./resource')();
+require('./resource');
 
 resourceTypes = new Array();
 

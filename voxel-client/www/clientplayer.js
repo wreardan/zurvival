@@ -1,4 +1,4 @@
-require('../player.js');
+require('../../player.js');
 require('./clientnecessity.js');
 
 function ClientPlayer(healthEl, heatEl, sleepEl) {

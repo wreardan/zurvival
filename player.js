@@ -1,5 +1,5 @@
-require('./resourcetype.js')();
-require('./necessity.js')();
+require('./resourcetype.js');
+require('./necessity.js');
 
 function Player() {
 	this.init();
@@ -34,3 +34,5 @@ Player.prototype.updateFromBundle = function(bundle) {
 	this.sleep.updateFromBundle(bundle.sleep);
 	this.inventory = bundle.inventory;
 }
+
+module.exports = Player
