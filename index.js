@@ -45,6 +45,9 @@ module.exports = function() {
   var chunkCache = {}
   var usingClientSettings
 
+  //initialize creature module
+  createCreature = require('voxel-creature')(game)
+
   // simple version of socket.io's sockets.emit
   function broadcast(id, cmd, arg1, arg2, arg3) {
     Object.keys(clients).map(function(client) {

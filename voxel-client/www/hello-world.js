@@ -4,7 +4,7 @@ var extend = require('extend')
 var voxelPlayer = require('voxel-player')
 var voxelpp = require('voxel-pp')
 var game
-
+var createCreature
 
 module.exports = function(opts, setup) {
   setup = setup || defaultSetup
@@ -67,6 +67,9 @@ module.exports = function(opts, setup) {
         "gl_FragColor = texColor;",
     "}"
     ].join("\n"))
+
+//initialize creature creation module
+    createCreature = require('voxel-creature')(game)
 
   })
 
