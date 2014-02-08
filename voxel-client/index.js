@@ -137,6 +137,14 @@ Client.prototype.createGame = function(settings, game) {
 
 Client.prototype.onServerUpdate = function(update) {
   // todo use server sent location
+
+  //update necessities
+  var heat = update.heat
+  var heatElement = document.getElementById("heat")
+  var heatText = (heatElement.firstElementChild||heatElement.firstChild)
+  heatText.innerHTML = heat.toString()
+
+  var sleep = update.sleep
 }
 
 Client.prototype.lerpMe = function(position) {

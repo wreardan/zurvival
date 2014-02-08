@@ -34,6 +34,9 @@
       #chat #messages { max-height: 153px; overflow: auto; }
       #cmdbox { position: absolute; bottom: 0; }
       #chat input { box-shadow: none; padding: 0px 10px; margin: 0; background: none; border: none; border-radius: 0; }
+      #health {position: absolute; top: 5px; right: 150px; color: red;}
+      #heat {position: absolute; top: 5px; right: 100px; color: yellow;}
+      #sleep {position: absolute; top: 5px; right: 50px; color: green;}
       input, input:focus { outline: none }
     </style>
     <link href="ratchet.css" media="screen" rel="stylesheet" type="text/css" />
@@ -48,6 +51,9 @@
         <input type="text" id="cmd" placeholder="Press <enter> to chat" /><br/>
       </div>
     </div>
+    <div id="health"><p>-1</p></div>
+    <div id="heat"><p>-2</p></div>
+    <div id="sleep"><p>-3</p></div>
     <nav class="bar-tab" id="tools" >
       <ul class="tab-inner">
         <li class="tab-item active">

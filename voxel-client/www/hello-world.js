@@ -10,7 +10,7 @@ module.exports = function(opts, setup) {
 
   var client;
   if(document.URL.search("localhost") == -1)
-    client = createClient(opts.server || "ws://zurvival.herokuapp.com/")
+    client = createClient(opts.server || "ws://test.worldwebcraft.com/")
   else
     client = createClient(opts.server || "ws://localhost:8080/")
   

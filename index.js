@@ -63,7 +63,10 @@ module.exports = function() {
         rotation: {
           x: emitter.player.rotation.x,
           y: emitter.player.rotation.y
-        }
+        },
+        health: 101,
+        heat: 100,
+        sleep: 99
       }
     })
     broadcast(false, 'update', update)
@@ -146,10 +149,18 @@ module.exports = function() {
     // ready for chunks to be sent
     emitter.on('created', function() {
       sendInitialChunks(emitter)
-      // fires when client sends us new input state
+      //stuff to send at start
+
+      // fires when client sends us new input state, fires every tick
       emitter.on('state', function(state) {
+        //stuff to send every tick
         emitter.player.rotation.x = state.rotation.x
         emitter.player.rotation.y = state.rotation.y
+
+        if(state.sleep) {
+          emitter.player.sleep = 100
+        }
+
         var pos = emitter.player.position
         var distance = pos.distanceTo(state.position)
         if (distance > 20) {
