@@ -4,6 +4,7 @@
 function Necessity(timeToDeplete, onZero) {
 	this.lastTimeRefreshed = Date.now();
 	this.timeToDeplete = timeToDeplete;
+	this.onZero = onZero;
 }
 
 /* fills the necessity bar completely */
@@ -27,7 +28,7 @@ Necessity.prototype.getValue = function() {
 /* calls onZero() if value < 0 */
 Necessity.prototype.update = function() {
 	if (this.getValue() <= 0 && this.onZero != undefined) {
-		this.onZero();
+		this.onZero.call(this);
 	}
 }
 

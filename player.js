@@ -6,9 +6,13 @@ function Player() {
 }
 
 Player.prototype.init = function() {
-	this.health = 1;
-	this.heat = new Necessity(60000);
-	this.sleep = new Necessity(120000);
+	var die = function() {
+		this.fill();
+		alert('you died!');
+	}
+	this.health = 100;
+	this.heat = new Necessity(6000, die);
+	this.sleep = new Necessity(12000, die);
 	this.inventory = makeInventory();
 }
 

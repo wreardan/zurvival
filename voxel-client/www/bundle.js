@@ -7067,6 +7067,7 @@ function hasOwnProperty(obj, prop) {
 function Necessity(timeToDeplete, onZero) {
 	this.lastTimeRefreshed = Date.now();
 	this.timeToDeplete = timeToDeplete;
+	this.onZero = onZero;
 }
 
 /* fills the necessity bar completely */
@@ -7090,7 +7091,7 @@ Necessity.prototype.getValue = function() {
 /* calls onZero() if value < 0 */
 Necessity.prototype.update = function() {
 	if (this.getValue() <= 0 && this.onZero != undefined) {
-		this.onZero();
+		this.onZero.call(this);
 	}
 }
 
@@ -7116,9 +7117,13 @@ function Player() {
 }
 
 Player.prototype.init = function() {
-	this.health = 1;
-	this.heat = new Necessity(60000);
-	this.sleep = new Necessity(120000);
+	var die = function() {
+		this.fill();
+		alert('you died!');
+	}
+	this.health = 100;
+	this.heat = new Necessity(6000, die);
+	this.sleep = new Necessity(12000, die);
 	this.inventory = makeInventory();
 }
 
@@ -91737,6 +91742,7 @@ function ClientNecessity(baseNecessity, domEl) {
 	this.lastTimeRefreshed = baseNecessity.lastTimeRefreshed;
 	this.timeToDeplete = baseNecessity.timeToDeplete;
 	this.domEl = domEl;
+	this.onZero = baseNecessity.onZero;
 }
 
 ClientNecessity.prototype = new Necessity();

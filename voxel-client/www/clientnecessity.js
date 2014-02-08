@@ -4,6 +4,7 @@ function ClientNecessity(baseNecessity, domEl) {
 	this.lastTimeRefreshed = baseNecessity.lastTimeRefreshed;
 	this.timeToDeplete = baseNecessity.timeToDeplete;
 	this.domEl = domEl;
+	this.onZero = baseNecessity.onZero;
 }
 
 ClientNecessity.prototype = new Necessity();
