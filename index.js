@@ -34,7 +34,7 @@ module.exports = function() {
   	worldOrigin: [0, 0, 0],
   	controls: { discreteFire: true },
     avatarInitialPosition: [2, 20, 2],
-    controlOptions: {jump: 6}
+    controlOptions: {jump: 1}
   }
   
   var game = engine(settings)
