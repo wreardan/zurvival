@@ -40,3 +40,5 @@ Necessity.prototype.makeResourceBundle = function() {
 Necessity.prototype.updateFromBundle = function(resourceBundle) {
 	this.lastTimeRefreshed = Date.now() - resourceBundle.time;
 }
+
+module.exports = necessity;

@@ -1,4 +1,4 @@
-require('./resource')();
+require('resource');
 
 resourceTypes = new Array();
 
@@ -7,6 +7,10 @@ function ResourceType() {
 	resourceTypes.push(this);
 }
 
-function create(position) {
+ResourceType.prototype.create = function(position) {
 	return new Resource(position, this);
 }
+
+ResourceType.resourceTypes = resourceTypes;
+
+module.exports = ResourceType;
