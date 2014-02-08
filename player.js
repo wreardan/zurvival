@@ -6,13 +6,15 @@ function Player() {
 }
 
 Player.prototype.init = function() {
-	var die = function() {
-		this.fill();
-//		alert('you died!');
-	}
 	this.health = 100;
-	this.heat = new Necessity(600000, die);
-	this.sleep = new Necessity(1200000, die);
+	this.heat = new Necessity(6000, function(heat) {
+		console.log("You died of hypothermia");
+		heat.fill();
+	});
+	this.sleep = new Necessity(120000, function(sleep) {
+		console.log("You died of exhaustion");
+		sleep.fill();
+	});
 	this.inventory = makeInventory();
 }
 
@@ -22,6 +24,11 @@ function makeInventory() {
 		inv[c] = 0;
 	}
 	return inv;
+}
+
+Player.prototype.update = function() {
+	this.sleep.update();
+	this.heat.update();
 }
 
 Player.prototype.makeResourceBundle = function() {

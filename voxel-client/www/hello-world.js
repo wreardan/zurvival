@@ -3,8 +3,11 @@ var highlight = require('voxel-highlight')
 var extend = require('extend')
 var voxelPlayer = require('voxel-player')
 var voxelpp = require('voxel-pp')
-var game, postprocessor
 
+var postprocessor
+
+var game
+var createCreature
 
 module.exports = function(opts, setup) {
   setup = setup || defaultSetup
@@ -80,6 +83,9 @@ module.exports = function(opts, setup) {
         "}",
         "}"
     ].join("\n"), uniforms: {dreamvision: {type: 'f', value: 0.5}, bloodvision: {type: 'f', value: 0.4}}})
+
+//initialize creature creation module
+    createCreature = require('voxel-creature')(game)
 
   })
 
