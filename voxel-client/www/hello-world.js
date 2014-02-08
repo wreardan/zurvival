@@ -44,7 +44,9 @@ module.exports = function(opts, setup) {
       postprocessor.use({fragmentShader: this.responseText,
         uniforms: {
           dreamvision: {type: 'f', value: 0.5},
-          bloodvision: {type: 'f', value: 0.4}}})
+          bloodvision: {type: 'f', value: 0.4},
+          frostvision: {type: 'f', value: 0.3},
+          time: {type: 'f', value: 0.0}}})
     }
     shaderRequest.open("GET", "./postproc.fs")
     shaderRequest.send()

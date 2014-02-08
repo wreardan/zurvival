@@ -9,10 +9,17 @@ varying vec2 vUv;
 //uniforms for enabling effects
 uniform float dreamvision;
 uniform float bloodvision;
+uniform float frostvision;
+uniform float time;
 
 void main() {
   vec4 texColor = texture2D(tDiffuse, vUv); //original pixel color
   gl_FragColor = texColor;
+  if(frostvision > 0.0){
+    vec4 texColorFrost = texture2D(tDiffuse, vec2(clamp(vUv.x + sin(2.0 * frostvision * time)/100.0, 0.0, 1.0), vUv.y)); //shake the screen - shivering???
+    texColorFrost = vec4(texColorFrost.r/2.0, texColorFrost.g/2.0, texColorFrost.b, texColorFrost.a);
+    gl_FragColor = mix(gl_FragColor, texColorFrost, frostvision/2.0);
+  }
   if(dreamvision > 0.0){
     vec4 texColorDream = texColor;
     texColorDream += texture2D(tDiffuse, vUv + 0.001);
