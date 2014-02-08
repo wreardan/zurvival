@@ -3,7 +3,7 @@ var highlight = require('voxel-highlight')
 var extend = require('extend')
 var voxelPlayer = require('voxel-player')
 var voxelpp = require('voxel-pp')
-var game
+var game, postprocessor
 
 
 module.exports = function(opts, setup) {
@@ -35,38 +35,51 @@ module.exports = function(opts, setup) {
 
 
     //try to add post-proc????
-  var postprocessor = voxelpp(game)
-  postprocessor.use([
+  postprocessor = voxelpp(game)
+  postprocessor.use({fragmentShader: [
     "uniform sampler2D tDiffuse;",
     "varying vec2 vUv;",
+    "//uniforms for enabling effects",
+    "uniform float dreamvision;",
+    "uniform float bloodvision;",
     "void main() {",
     "/*",
     "dream vision vUvt effect",
     "http://www.geeks3d.com/20091112/shader-library-dream-vision-vUvt-processing-filter-glsl/",
     "*/",
 
-        "vec4 texColor = texture2D(tDiffuse, vUv);",
-
-        "texColor += texture2D(tDiffuse, vUv + 0.001);",
-        "texColor += texture2D(tDiffuse, vUv + 0.003);",
-        "texColor += texture2D(tDiffuse, vUv + 0.005);",
-        "texColor += texture2D(tDiffuse, vUv + 0.007);",
-        "texColor += texture2D(tDiffuse, vUv + 0.009);",
-        "texColor += texture2D(tDiffuse, vUv + 0.011);",
-
-        "texColor += texture2D(tDiffuse, vUv - 0.001);",
-        "texColor += texture2D(tDiffuse, vUv - 0.003);",
-        "texColor += texture2D(tDiffuse, vUv - 0.005);",
-        "texColor += texture2D(tDiffuse, vUv - 0.007);",
-        "texColor += texture2D(tDiffuse, vUv - 0.009);",
-        "texColor += texture2D(tDiffuse, vUv - 0.011);",
-
-        "texColor.rgb = vec3((texColor.r + texColor.g + texColor.b) / 3.0);",
-        "texColor = texColor / 9.5;",
-
+        "vec4 texColor = texture2D(tDiffuse, vUv); //original pixel color",
         "gl_FragColor = texColor;",
-    "}"
-    ].join("\n"))
+
+        "if(dreamvision > 0.0){",
+
+        "vec4 texColorDream = texColor;",
+        "texColorDream += texture2D(tDiffuse, vUv + 0.001);",
+        "texColorDream += texture2D(tDiffuse, vUv + 0.003);",
+        "texColorDream += texture2D(tDiffuse, vUv + 0.005);",
+        "texColorDream += texture2D(tDiffuse, vUv + 0.007);",
+        "texColorDream += texture2D(tDiffuse, vUv + 0.009);",
+        "texColorDream += texture2D(tDiffuse, vUv + 0.011);",
+
+        "texColorDream += texture2D(tDiffuse, vUv - 0.001);",
+        "texColorDream += texture2D(tDiffuse, vUv - 0.003);",
+        "texColorDream += texture2D(tDiffuse, vUv - 0.005);",
+        "texColorDream += texture2D(tDiffuse, vUv - 0.007);",
+        "texColorDream += texture2D(tDiffuse, vUv - 0.009);",
+        "texColorDream += texture2D(tDiffuse, vUv - 0.011);",
+
+        "texColorDream.rgb = vec3((texColorDream.r + texColorDream.g + texColorDream.b) / 3.0);",
+        "texColorDream = texColorDream / 9.5;",
+
+        "gl_FragColor = mix(gl_FragColor, texColorDream, dreamvision);",
+        "}",
+
+        "if(bloodvision > 0.0){",
+        "vec4 texColorBlood = vec4(texColor.r/2.0 + texColor.g/4.0 + texColor.b/4.0, 0.0, 0.0, texColor.a);",
+        "gl_FragColor = mix(gl_FragColor, texColorBlood, bloodvision);",
+        "}",
+        "}"
+    ].join("\n"), uniforms: {dreamvision: {type: 'f', value: 0.5}, bloodvision: {type: 'f', value: 0.4}}})
 
   })
 
@@ -86,6 +99,9 @@ function defaultSetup(game, avatar, client) {
   // toggle between first and third person modes
   window.addEventListener('keydown', function (ev) {
     if (ev.keyCode === 'R'.charCodeAt(0)) avatar.toggle()
+    if (ev.keyCode === 'B'.charCodeAt(0)) postprocessor.passes[1].uniforms.dreamvision.value += 0.1
+    if (ev.keyCode === 'V'.charCodeAt(0)) postprocessor.passes[1].uniforms.dreamvision.value -= 0.1
+        
   })
 
   // block interaction stuff, uses highlight data
