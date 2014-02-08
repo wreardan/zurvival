@@ -11,13 +11,19 @@ var texturePath = require('painterly-textures')(__dirname)
 var voxel = require('voxel')
 
 module.exports = function() {
-  
+
+  function flatGenerator(x,y,z) {
+    return y <= 1 ? 1 : 0;
+  }
+
   // these settings will be used to create an in-memory
   // world on the server and will be sent to all
   // new clients when they connect
   var settings = {
-  	generate: voxel.generator['Valley'],
+//  	generate: voxel.generator['Valley'],
+    generate: flatGenerator,
   	chunkDistance: 2,
+    chunkSize: 32,
   	materials: [
   	['grass', 'dirt', 'grass_dirt'],
   	'obsidian',
@@ -27,7 +33,8 @@ module.exports = function() {
   	texturePath: texturePath,
   	worldOrigin: [0, 0, 0],
   	controls: { discreteFire: true },
-	avatarInitialPosition: [2, 20, 2]
+    avatarInitialPosition: [2, 20, 2],
+    controlOptions: {jump: 6}
   }
   
   var game = engine(settings)
