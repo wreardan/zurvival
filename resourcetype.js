@@ -1,3 +1,5 @@
+require('./resource')();
+
 resourceTypes = new Array();
 
 function ResourceType() {
