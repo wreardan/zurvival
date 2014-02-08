@@ -28,7 +28,7 @@ Necessity.prototype.getValue = function() {
 /* calls onZero() if value < 0 */
 Necessity.prototype.update = function() {
 	if (this.getValue() <= 0 && this.onZero != undefined) {
-		this.onZero.call(this);
+		this.onZero(this);
 	}
 }
 

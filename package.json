@@ -25,6 +25,8 @@
     "node": "0.8.x"
   },
   "devDependencies": {
-    "websocket-stream": "0.0.5"
+    "websocket-stream": "0.0.5",
+    "grunt": "~0.4.2",
+    "grunt-contrib-watch": "~0.5.3"
   }
 }
