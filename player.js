@@ -11,7 +11,7 @@ Player.prototype.init = function() {
 		console.log("You died of hypothermia");
 		heat.fill();
 	});
-	this.sleep = new Necessity(120000, function(sleep) {
+	this.sleep = new Necessity(12000, function(sleep) {
 		console.log("You died of exhaustion");
 		sleep.fill();
 	});

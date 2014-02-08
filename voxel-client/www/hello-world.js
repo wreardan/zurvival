@@ -4,7 +4,7 @@ var extend = require('extend')
 var voxelPlayer = require('voxel-player')
 var voxelpp = require('voxel-pp')
 
-var postprocessor
+//var postprocessor
 
 var game
 var createCreature
@@ -72,6 +72,8 @@ function defaultSetup(game, avatar, client) {
     if (ev.keyCode === 'R'.charCodeAt(0)) avatar.toggle()
     if (ev.keyCode === 'B'.charCodeAt(0)) postprocessor.passes[1].uniforms.dreamvision.value += 0.1
     if (ev.keyCode === 'V'.charCodeAt(0)) postprocessor.passes[1].uniforms.dreamvision.value -= 0.1
+    if (ev.keyCode === 'N'.charCodeAt(0)) postprocessor.passes[1].uniforms.bloodvision.value += 0.1
+    if (ev.keyCode === 'M'.charCodeAt(0)) postprocessor.passes[1].uniforms.bloodvision.value -= 0.1
         
   })
 
