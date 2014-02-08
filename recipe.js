@@ -8,7 +8,7 @@ function Recipe(requirements, result) {
 Recipe.prototype.canMake = function(inventory) {
 	for (var key in this.requirements) {
 		if (this.requirements.hasOwnProperty(key)) {
-			if (inventory.resources[key] < this.requirements[key]) {
+			if (inventory[key] < this.requirements[key]) {
 				return false;
 			}
 		}
@@ -20,8 +20,8 @@ Recipe.prototype.canMake = function(inventory) {
 Recipe.prototype.make = function(inventory) {
 	for (var key in this.requirements) {
 		if (this.requirements.hasOwnProperty(key)) {
-			inventory.resources[key] -= this.requirements[key];
+			inventory[key] -= this.requirements[key];
 		}
 	}
-	inventory.resources[result]++;
+	inventory[result]++;
 }
