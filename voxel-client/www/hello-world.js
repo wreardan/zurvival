@@ -43,9 +43,9 @@ module.exports = function(opts, setup) {
       postprocessor = voxelpp(game)
       postprocessor.use({fragmentShader: this.responseText,
         uniforms: {
-          dreamvision: {type: 'f', value: 0.5},
-          bloodvision: {type: 'f', value: 0.4},
-          frostvision: {type: 'f', value: 0.3},
+          dreamvision: {type: 'f', value: 0.0},
+          bloodvision: {type: 'f', value: 0.0},
+          frostvision: {type: 'f', value: 0.0},
           time: {type: 'f', value: 0.0}}})
     }
     shaderRequest.open("GET", "./postproc.fs")
@@ -72,11 +72,12 @@ function defaultSetup(game, avatar, client) {
   // toggle between first and third person modes
   window.addEventListener('keydown', function (ev) {
     if (ev.keyCode === 'R'.charCodeAt(0)) avatar.toggle()
-    if (ev.keyCode === 'B'.charCodeAt(0)) postprocessor.passes[1].uniforms.dreamvision.value += 0.1
-    if (ev.keyCode === 'V'.charCodeAt(0)) postprocessor.passes[1].uniforms.dreamvision.value -= 0.1
-    if (ev.keyCode === 'N'.charCodeAt(0)) postprocessor.passes[1].uniforms.bloodvision.value += 0.1
-    if (ev.keyCode === 'M'.charCodeAt(0)) postprocessor.passes[1].uniforms.bloodvision.value -= 0.1
-        
+    if (ev.keyCode === 'V'.charCodeAt(0) && (postprocessor.passes[1].uniforms.dreamvision.value < 1.0)) postprocessor.passes[1].uniforms.dreamvision.value += 0.05
+    if (ev.keyCode === 'B'.charCodeAt(0) && (postprocessor.passes[1].uniforms.dreamvision.value > 0.0)) postprocessor.passes[1].uniforms.dreamvision.value -= 0.05
+    if (ev.keyCode === 'N'.charCodeAt(0) && (postprocessor.passes[1].uniforms.bloodvision.value < 1.0)) postprocessor.passes[1].uniforms.bloodvision.value += 0.05
+    if (ev.keyCode === 'M'.charCodeAt(0) && (postprocessor.passes[1].uniforms.bloodvision.value > 0.0)) postprocessor.passes[1].uniforms.bloodvision.value -= 0.05
+    if (ev.keyCode === 'H'.charCodeAt(0) && (postprocessor.passes[1].uniforms.frostvision.value < 1.0)) postprocessor.passes[1].uniforms.frostvision.value += 0.05
+    if (ev.keyCode === 'J'.charCodeAt(0) && (postprocessor.passes[1].uniforms.frostvision.value > 0.0)) postprocessor.passes[1].uniforms.frostvision.value -= 0.05
   })
 
   // block interaction stuff, uses highlight data

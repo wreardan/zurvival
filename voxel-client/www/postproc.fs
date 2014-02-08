@@ -15,12 +15,11 @@ uniform float time;
 void main() {
   vec4 texColor = texture2D(tDiffuse, vUv); //original pixel color
   gl_FragColor = texColor;
-  if(frostvision > 0.0){
-    vec4 texColorFrost = texture2D(tDiffuse, vec2(clamp(vUv.x + sin(2.0 * frostvision * time)/100.0, 0.0, 1.0), vUv.y)); //shake the screen - shivering???
-    texColorFrost = vec4(texColorFrost.r/2.0, texColorFrost.g/2.0, texColorFrost.b, texColorFrost.a);
-    gl_FragColor = mix(gl_FragColor, texColorFrost, frostvision/2.0);
+  if(frostvision > 0.5){
+    vec4 texColorFrost = texture2D(tDiffuse, vec2(clamp(vUv.x + sin(2.0 * (frostvision - 0.5) * time)/100.0, 0.0, 1.0), vUv.y)); //shake the screen - shivering???
+    gl_FragColor = mix(texColorFrost, vec4(0.5, 0.5, 1.0, texColorFrost.a), (frostvision-0.5)/1.5);
   }
-  if(dreamvision > 0.0){
+  if(dreamvision > 0.3){
     vec4 texColorDream = texColor;
     texColorDream += texture2D(tDiffuse, vUv + 0.001);
     texColorDream += texture2D(tDiffuse, vUv + 0.003);
@@ -38,11 +37,12 @@ void main() {
 
     texColorDream.rgb = vec3((texColorDream.r + texColorDream.g + texColorDream.b) / 3.0);
     texColorDream = texColorDream / 9.5;
-
-    gl_FragColor = mix(gl_FragColor,texColorDream, dreamvision);
+    texColorDream = clamp(texColorDream, 0.0, 1.0);
+    gl_FragColor = mix(gl_FragColor,texColorDream, dreamvision-0.3);
   }
-  if(bloodvision > 0.0){
+  if(bloodvision > 0.2){
     vec4 texColorBlood = vec4(texColor.r/2.0 + texColor.g/4.0 + texColor.b/4.0, 0.0, 0.0, texColor.a);
-    gl_FragColor = mix(gl_FragColor, texColorBlood, bloodvision);
+    texColorBlood = clamp(texColorBlood, 0.0, 1.0);
+    gl_FragColor = mix(gl_FragColor, texColorBlood, bloodvision-0.2);
   }   
 }
