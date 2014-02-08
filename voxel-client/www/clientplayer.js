@@ -12,8 +12,7 @@ ClientPlayer.prototype = new Player();
 
 ClientPlayer.prototype.update = function() {
 	this.healthEl.innerHTML = ""+this.health;
-	this.heat.update();
-	this.sleep.update();
+	Player.prototype.update.call(this);
 }
 
 module.exports = ClientPlayer;

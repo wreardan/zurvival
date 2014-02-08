@@ -62,6 +62,7 @@ module.exports = function() {
     var update = {positions:{}, date: +new Date()}
     clientKeys.map(function(key) {
       var emitter = clients[key]
+      emitter.player.player.update()
       update.positions[key] = {
         position: emitter.player.position,
         rotation: {
