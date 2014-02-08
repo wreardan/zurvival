@@ -8,11 +8,11 @@ function Player() {
 Player.prototype.init = function() {
 	var die = function() {
 		this.fill();
-		alert('you died!');
+//		alert('you died!');
 	}
 	this.health = 100;
-	this.heat = new Necessity(6000, die);
-	this.sleep = new Necessity(12000, die);
+	this.heat = new Necessity(600000, die);
+	this.sleep = new Necessity(1200000, die);
 	this.inventory = makeInventory();
 }
 

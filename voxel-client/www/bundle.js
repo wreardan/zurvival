@@ -7119,11 +7119,11 @@ function Player() {
 Player.prototype.init = function() {
 	var die = function() {
 		this.fill();
-		alert('you died!');
+//		alert('you died!');
 	}
 	this.health = 100;
-	this.heat = new Necessity(6000, die);
-	this.sleep = new Necessity(12000, die);
+	this.heat = new Necessity(600000, die);
+	this.sleep = new Necessity(1200000, die);
 	this.inventory = makeInventory();
 }
 
@@ -7398,7 +7398,7 @@ function scale( x, fromLow, fromHigh, toLow, toHigh ) {
   return ( x - fromLow ) * ( toHigh - toLow ) / ( fromHigh - fromLow ) + toLow
 }
 
-},{"./chat":28,"./randomname":103,"./www/clientplayer.js":105,"duplex-emitter":31,"minecraft-skin":40,"toolbar":41,"url":21,"voxel-crunch":45,"voxel-engine":46,"voxel-highlight":91,"voxel-player":94,"websocket-stream":102}],30:[function(require,module,exports){
+},{"./chat":28,"./randomname":110,"./www/clientplayer.js":112,"duplex-emitter":31,"minecraft-skin":40,"toolbar":41,"url":21,"voxel-crunch":45,"voxel-engine":46,"voxel-highlight":91,"voxel-player":94,"websocket-stream":109}],30:[function(require,module,exports){
 var EventEmitter = require('events').EventEmitter;
 var emitStream = require('emit-stream');
 
@@ -10087,7 +10087,7 @@ Game.prototype.destroy = function() {
   clearInterval(this.timer)
 }
 
-},{"./lib/detector":47,"./lib/stats":48,"__browserify_process":4,"aabb-3d":49,"collide-3d-tilemap":50,"events":1,"gl-matrix":51,"inherits":52,"interact":53,"kb-controls":62,"path":8,"pin-it":67,"raf":68,"spatial-events":69,"three":71,"voxel":96,"voxel-chunks":72,"voxel-control":83,"voxel-mesh":84,"voxel-physical":85,"voxel-raycast":86,"voxel-region-change":87,"voxel-texture":88,"voxel-view":90}],47:[function(require,module,exports){
+},{"./lib/detector":47,"./lib/stats":48,"__browserify_process":4,"aabb-3d":49,"collide-3d-tilemap":50,"events":1,"gl-matrix":51,"inherits":52,"interact":53,"kb-controls":62,"path":8,"pin-it":67,"raf":68,"spatial-events":69,"three":71,"voxel":103,"voxel-chunks":72,"voxel-control":83,"voxel-mesh":84,"voxel-physical":85,"voxel-raycast":86,"voxel-region-change":87,"voxel-texture":88,"voxel-view":90}],47:[function(require,module,exports){
 /**
  * @author alteredq / http://alteredqualia.com/
  * @author mr.doob / http://mrdoob.com/
@@ -91423,6 +91423,470 @@ function parseXYZ (x, y, z) {
 }
 
 },{"minecraft-skin":40}],95:[function(require,module,exports){
+module.exports = function(game) {
+  var THREE = game.THREE
+    , EffectComposer = Composer.EffectComposer = require('three-effectcomposer')(THREE)
+    , renderer = game.renderer || game.view.renderer
+    , used = false
+    , composer
+
+  game.render = function render() {
+    return used ? composer.composer.render() : renderer.render(game.scene, game.camera)
+  };
+
+  function Composer() {
+    var composer = this.composer = new EffectComposer(renderer)
+    composer.passes.push(new EffectComposer.RenderPass(game.scene, game.camera))
+
+    this.passes = composer.passes
+    this.updateRenderToScreen()
+  };
+
+  Composer.prototype.use = function(params) {
+    params = params || {}
+    if (typeof params === 'string') params = {
+      fragmentShader: params
+    }
+
+    params.fragmentShader = params.fragmentShader || EffectComposer.CopyShader.fragmentShader
+    params.vertexShader = params.vertexShader || EffectComposer.CopyShader.vertexShader
+    params.uniforms = THREE.UniformsUtils.merge([ EffectComposer.CopyShader.uniforms, params.uniforms || {} ])
+
+    this.passes.push(new EffectComposer.ShaderPass(params))
+    this.updateRenderToScreen()
+
+    return this
+  };
+
+  Composer.prototype.addPass = function(pass, params) {
+    if (typeof pass === 'string') {
+      pass = EffectComposer[pass].apply(this, [].slice.call(arguments, 1))
+    }
+    this.composer.addPass(pass)
+    this.updateRenderToScreen()
+
+    return pass
+  };
+
+  Composer.prototype.updateRenderToScreen = function() {
+    used = this.passes.length > 1
+    this.passes.slice(0, -1).forEach(function(pass) {
+      pass.renderToScreen = false
+    })
+    this.passes.slice(-1).forEach(function(pass) {
+      pass.renderToScreen = true
+    })
+  };
+
+  Composer.prototype.EffectComposer = EffectComposer
+  Composer.prototype.ClearMaskPass = EffectComposer.ClearMaskPass
+  Composer.prototype.CopyShader = EffectComposer.CopyShader
+  Composer.prototype.ShaderPass = EffectComposer.ShaderPass
+  Composer.prototype.RenderPass = EffectComposer.RenderPass
+  Composer.prototype.MaskPass = EffectComposer.MaskPass
+  Composer.prototype.THREE = THREE
+
+  composer = new Composer
+
+  return composer
+};
+
+},{"three-effectcomposer":96}],96:[function(require,module,exports){
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
+module.exports = function(THREE) {
+  var CopyShader = EffectComposer.CopyShader = require('three-copyshader')
+    , RenderPass = EffectComposer.RenderPass = require('./lib/renderpass')(THREE)
+    , ShaderPass = EffectComposer.ShaderPass = require('./lib/shaderpass')(THREE, EffectComposer)
+    , MaskPass = EffectComposer.MaskPass = require('./lib/maskpass')(THREE)
+    , ClearMaskPass = EffectComposer.ClearMaskPass = require('./lib/clearmaskpass')(THREE)
+
+  function EffectComposer( renderer, renderTarget ) {
+    this.renderer = renderer;
+
+    if ( renderTarget === undefined ) {
+      var width = window.innerWidth || 1;
+      var height = window.innerHeight || 1;
+      var parameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat, stencilBuffer: false };
+
+      renderTarget = new THREE.WebGLRenderTarget( width, height, parameters );
+    }
+
+    this.renderTarget1 = renderTarget;
+    this.renderTarget2 = renderTarget.clone();
+
+    this.writeBuffer = this.renderTarget1;
+    this.readBuffer = this.renderTarget2;
+
+    this.passes = [];
+
+    this.copyPass = new ShaderPass( CopyShader );
+  };
+
+  EffectComposer.prototype = {
+    swapBuffers: function() {
+
+      var tmp = this.readBuffer;
+      this.readBuffer = this.writeBuffer;
+      this.writeBuffer = tmp;
+
+    },
+
+    addPass: function ( pass ) {
+
+      this.passes.push( pass );
+
+    },
+
+    insertPass: function ( pass, index ) {
+
+      this.passes.splice( index, 0, pass );
+
+    },
+
+    render: function ( delta ) {
+
+      this.writeBuffer = this.renderTarget1;
+      this.readBuffer = this.renderTarget2;
+
+      var maskActive = false;
+
+      var pass, i, il = this.passes.length;
+
+      for ( i = 0; i < il; i ++ ) {
+
+        pass = this.passes[ i ];
+
+        if ( !pass.enabled ) continue;
+
+        pass.render( this.renderer, this.writeBuffer, this.readBuffer, delta, maskActive );
+
+        if ( pass.needsSwap ) {
+
+          if ( maskActive ) {
+
+            var context = this.renderer.context;
+
+            context.stencilFunc( context.NOTEQUAL, 1, 0xffffffff );
+
+            this.copyPass.render( this.renderer, this.writeBuffer, this.readBuffer, delta );
+
+            context.stencilFunc( context.EQUAL, 1, 0xffffffff );
+
+          }
+
+          this.swapBuffers();
+
+        }
+
+        if ( pass instanceof MaskPass ) {
+
+          maskActive = true;
+
+        } else if ( pass instanceof ClearMaskPass ) {
+
+          maskActive = false;
+
+        }
+
+      }
+
+    },
+
+    reset: function ( renderTarget ) {
+
+      if ( renderTarget === undefined ) {
+
+        renderTarget = this.renderTarget1.clone();
+
+        renderTarget.width = window.innerWidth;
+        renderTarget.height = window.innerHeight;
+
+      }
+
+      this.renderTarget1 = renderTarget;
+      this.renderTarget2 = renderTarget.clone();
+
+      this.writeBuffer = this.renderTarget1;
+      this.readBuffer = this.renderTarget2;
+
+    },
+
+    setSize: function ( width, height ) {
+
+      var renderTarget = this.renderTarget1.clone();
+
+      renderTarget.width = width;
+      renderTarget.height = height;
+
+      this.reset( renderTarget );
+
+    }
+
+  };
+
+  // shared ortho camera
+
+  EffectComposer.camera = new THREE.OrthographicCamera( -1, 1, 1, -1, 0, 1 );
+
+  EffectComposer.quad = new THREE.Mesh( new THREE.PlaneGeometry( 2, 2 ), null );
+
+  EffectComposer.scene = new THREE.Scene();
+  EffectComposer.scene.add( EffectComposer.quad );
+
+  return EffectComposer
+};
+},{"./lib/clearmaskpass":97,"./lib/maskpass":98,"./lib/renderpass":99,"./lib/shaderpass":100,"three-copyshader":101}],97:[function(require,module,exports){
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
+module.exports = function(THREE) {
+  function ClearMaskPass() {
+    if (!(this instanceof ClearMaskPass)) return new ClearMaskPass(scene, camera);
+    this.enabled = true;
+  };
+
+  ClearMaskPass.prototype = {
+    render: function ( renderer, writeBuffer, readBuffer, delta ) {
+      var context = renderer.context;
+      context.disable( context.STENCIL_TEST );
+    }
+  };
+
+  return ClearMaskPass
+};
+},{}],98:[function(require,module,exports){
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
+module.exports = function(THREE) {
+  function MaskPass( scene, camera ) {
+    if (!(this instanceof MaskPass)) return new MaskPass(scene, camera);
+
+    this.scene = scene;
+    this.camera = camera;
+
+    this.enabled = true;
+    this.clear = true;
+    this.needsSwap = false;
+
+    this.inverse = false;
+  };
+
+  MaskPass.prototype = {
+
+    render: function ( renderer, writeBuffer, readBuffer, delta ) {
+
+      var context = renderer.context;
+
+      // don't update color or depth
+
+      context.colorMask( false, false, false, false );
+      context.depthMask( false );
+
+      // set up stencil
+
+      var writeValue, clearValue;
+
+      if ( this.inverse ) {
+
+        writeValue = 0;
+        clearValue = 1;
+
+      } else {
+
+        writeValue = 1;
+        clearValue = 0;
+
+      }
+
+      context.enable( context.STENCIL_TEST );
+      context.stencilOp( context.REPLACE, context.REPLACE, context.REPLACE );
+      context.stencilFunc( context.ALWAYS, writeValue, 0xffffffff );
+      context.clearStencil( clearValue );
+
+      // draw into the stencil buffer
+
+      renderer.render( this.scene, this.camera, readBuffer, this.clear );
+      renderer.render( this.scene, this.camera, writeBuffer, this.clear );
+
+      // re-enable update of color and depth
+
+      context.colorMask( true, true, true, true );
+      context.depthMask( true );
+
+      // only render where stencil is set to 1
+
+      context.stencilFunc( context.EQUAL, 1, 0xffffffff );  // draw if == 1
+      context.stencilOp( context.KEEP, context.KEEP, context.KEEP );
+
+    }
+
+  };
+
+  return MaskPass
+};
+
+},{}],99:[function(require,module,exports){
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
+module.exports = function(THREE) {
+  function RenderPass( scene, camera, overrideMaterial, clearColor, clearAlpha ) {
+    if (!(this instanceof RenderPass)) return new RenderPass(scene, camera, overrideMaterial, clearColor, clearAlpha);
+
+    this.scene = scene;
+    this.camera = camera;
+
+    this.overrideMaterial = overrideMaterial;
+
+    this.clearColor = clearColor;
+    this.clearAlpha = ( clearAlpha !== undefined ) ? clearAlpha : 1;
+
+    this.oldClearColor = new THREE.Color();
+    this.oldClearAlpha = 1;
+
+    this.enabled = true;
+    this.clear = true;
+    this.needsSwap = false;
+
+  };
+
+  RenderPass.prototype = {
+
+    render: function ( renderer, writeBuffer, readBuffer, delta ) {
+
+      this.scene.overrideMaterial = this.overrideMaterial;
+
+      if ( this.clearColor ) {
+
+        this.oldClearColor.copy( renderer.getClearColor() );
+        this.oldClearAlpha = renderer.getClearAlpha();
+
+        renderer.setClearColor( this.clearColor, this.clearAlpha );
+
+      }
+
+      renderer.render( this.scene, this.camera, readBuffer, this.clear );
+
+      if ( this.clearColor ) {
+
+        renderer.setClearColor( this.oldClearColor, this.oldClearAlpha );
+
+      }
+
+      this.scene.overrideMaterial = null;
+
+    }
+
+  };
+
+  return RenderPass;
+
+};
+
+},{}],100:[function(require,module,exports){
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
+module.exports = function(THREE, EffectComposer) {
+  function ShaderPass( shader, textureID ) {
+    if (!(this instanceof ShaderPass)) return new ShaderPass(shader, textureID);
+
+    this.textureID = ( textureID !== undefined ) ? textureID : "tDiffuse";
+
+    this.uniforms = THREE.UniformsUtils.clone( shader.uniforms );
+
+    this.material = new THREE.ShaderMaterial( {
+
+      uniforms: this.uniforms,
+      vertexShader: shader.vertexShader,
+      fragmentShader: shader.fragmentShader
+
+    } );
+
+    this.renderToScreen = false;
+
+    this.enabled = true;
+    this.needsSwap = true;
+    this.clear = false;
+
+  };
+
+  ShaderPass.prototype = {
+
+    render: function ( renderer, writeBuffer, readBuffer, delta ) {
+
+      if ( this.uniforms[ this.textureID ] ) {
+
+        this.uniforms[ this.textureID ].value = readBuffer;
+
+      }
+
+      EffectComposer.quad.material = this.material;
+
+      if ( this.renderToScreen ) {
+
+        renderer.render( EffectComposer.scene, EffectComposer.camera );
+
+      } else {
+
+        renderer.render( EffectComposer.scene, EffectComposer.camera, writeBuffer, this.clear );
+
+      }
+
+    }
+
+  };
+
+  return ShaderPass;
+
+};
+},{}],101:[function(require,module,exports){
+/**
+ * @author alteredq / http://alteredqualia.com/
+ *
+ * Full-screen textured quad shader
+ */
+
+module.exports = {
+  uniforms: {
+    "tDiffuse": { type: "t", value: null },
+    "opacity":  { type: "f", value: 1.0 }
+  },
+  vertexShader: [
+    "varying vec2 vUv;",
+
+    "void main() {",
+
+      "vUv = uv;",
+      "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+    "}"
+  ].join("\n"),
+  fragmentShader: [
+    "uniform float opacity;",
+
+    "uniform sampler2D tDiffuse;",
+
+    "varying vec2 vUv;",
+
+    "void main() {",
+
+      "vec4 texel = texture2D( tDiffuse, vUv );",
+      "gl_FragColor = opacity * texel;",
+
+    "}"
+  ].join("\n")
+};
+
+},{}],102:[function(require,module,exports){
 var events = require('events')
 var inherits = require('inherits')
 
@@ -91559,7 +92023,7 @@ Chunker.prototype.voxelVector = function(pos) {
   return [vx, vy, vz]
 };
 
-},{"events":1,"inherits":101}],96:[function(require,module,exports){
+},{"events":1,"inherits":108}],103:[function(require,module,exports){
 var chunker = require('./chunker')
 
 module.exports = function(opts) {
@@ -91655,17 +92119,17 @@ module.exports.generateExamples = function() {
 }
 
 
-},{"./chunker":95,"./meshers/culled":97,"./meshers/greedy":98,"./meshers/monotone":99,"./meshers/stupid":100}],97:[function(require,module,exports){
+},{"./chunker":102,"./meshers/culled":104,"./meshers/greedy":105,"./meshers/monotone":106,"./meshers/stupid":107}],104:[function(require,module,exports){
 module.exports=require(79)
-},{}],98:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 module.exports=require(80)
-},{}],99:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 module.exports=require(81)
-},{}],100:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 module.exports=require(82)
-},{}],101:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 module.exports=require(44)
-},{}],102:[function(require,module,exports){
+},{}],109:[function(require,module,exports){
 var stream = require('stream')
 var util = require('util')
 
@@ -91719,7 +92183,7 @@ WebsocketStream.prototype.end = function() {
   this.ws.close()
 }
 
-},{"stream":14,"util":23}],103:[function(require,module,exports){
+},{"stream":14,"util":23}],110:[function(require,module,exports){
 var names = ['alpha', 'space', 'beta', 'omega', 'zone', 'base', 'bass', 'centaur', 'official', 'free', 'fresh', 'freedom', 'power', 'synth', 'lazer', 'gamma', 'red', 'green', 'ultra', 'net', 'cafe', 'secret', 'open', 'track', 'wisdom', 'genghis', 'tron', 'grid', 'plus', 'maximum', 'pre', 'post', 'mid', 'pyramid', 'core', 'fast', 'dragon', 'wizard', 'yak', 'crystal', 'electric', 'rizzle', 'tiny', 'pantry', 'dry', 'bleeding', 'fruit', 'mower', 'whiskey', 'marble', 'cake', 'meat', 'donkey','wewo', 'banana', 'rooster', 'bear', 'bacon', 'moon', 'glitter', 'grandma', 'walrus', 'party', 'junk', 'crazy', 'turbo', 'hyper', 'mega', 'boss', 'dunk', 'pow', 'icy', 'bobo', 'pile', 'tater', 'wiz', 'gnarl', 'mix', 'pop', 'mustard', 'bizzler', 'fog', 'punch', 'planar']
 
 module.exports = function(len) {
@@ -91735,7 +92199,7 @@ module.exports = function(len) {
 function randomName() {
   return names[~~(Math.random() * names.length)]
 }
-},{}],104:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 var Necessity = require('../../necessity.js');
 
 function ClientNecessity(baseNecessity, domEl) {
@@ -91754,7 +92218,7 @@ ClientNecessity.prototype.update = function() {
 }
 
 module.exports = ClientNecessity;
-},{"../../necessity.js":24}],105:[function(require,module,exports){
+},{"../../necessity.js":24}],112:[function(require,module,exports){
 var Player = require('../../player.js');
 var ClientNecessity = require('./clientnecessity.js');
 
@@ -91774,17 +92238,19 @@ ClientPlayer.prototype.update = function() {
 }
 
 module.exports = ClientPlayer;
-},{"../../player.js":25,"./clientnecessity.js":104}],106:[function(require,module,exports){
+},{"../../player.js":25,"./clientnecessity.js":111}],113:[function(require,module,exports){
 if(document.URL.search("localhost") == -1)
 	require('./hello-world.js')({server: "ws://test.worldwebcraft.com/"})
 else
 	require('./hello-world.js')({server: "ws://localhost:80/"})
-},{"./hello-world.js":107}],107:[function(require,module,exports){
+},{"./hello-world.js":114}],114:[function(require,module,exports){
 var createClient = require('../')
 var highlight = require('voxel-highlight')
 var extend = require('extend')
 var voxelPlayer = require('voxel-player')
+var voxelpp = require('voxel-pp')
 var game
+
 
 module.exports = function(opts, setup) {
   setup = setup || defaultSetup
@@ -91812,7 +92278,44 @@ module.exports = function(opts, setup) {
     var settings = game.settings.avatarInitialPosition
     avatar.position.set(settings[0],settings[1],settings[2])
     setup(game, avatar, client)
+
+
+    //try to add post-proc????
+  var postprocessor = voxelpp(game)
+  postprocessor.use([
+    "uniform sampler2D tDiffuse;",
+    "varying vec2 vUv;",
+    "void main() {",
+    "/*",
+    "dream vision vUvt effect",
+    "http://www.geeks3d.com/20091112/shader-library-dream-vision-vUvt-processing-filter-glsl/",
+    "*/",
+
+        "vec4 texColor = texture2D(tDiffuse, vUv);",
+
+        "texColor += texture2D(tDiffuse, vUv + 0.001);",
+        "texColor += texture2D(tDiffuse, vUv + 0.003);",
+        "texColor += texture2D(tDiffuse, vUv + 0.005);",
+        "texColor += texture2D(tDiffuse, vUv + 0.007);",
+        "texColor += texture2D(tDiffuse, vUv + 0.009);",
+        "texColor += texture2D(tDiffuse, vUv + 0.011);",
+
+        "texColor += texture2D(tDiffuse, vUv - 0.001);",
+        "texColor += texture2D(tDiffuse, vUv - 0.003);",
+        "texColor += texture2D(tDiffuse, vUv - 0.005);",
+        "texColor += texture2D(tDiffuse, vUv - 0.007);",
+        "texColor += texture2D(tDiffuse, vUv - 0.009);",
+        "texColor += texture2D(tDiffuse, vUv - 0.011);",
+
+        "texColor.rgb = vec3((texColor.r + texColor.g + texColor.b) / 3.0);",
+        "texColor = texColor / 9.5;",
+
+        "gl_FragColor = texColor;",
+    "}"
+    ].join("\n"))
+
   })
+
 
   return game
 }
@@ -91849,4 +92352,4 @@ function defaultSetup(game, avatar, client) {
     }
   })
 }
-},{"../":29,"extend":39,"voxel-highlight":91,"voxel-player":94}]},{},[106])
+},{"../":29,"extend":39,"voxel-highlight":91,"voxel-player":94,"voxel-pp":95}]},{},[113])

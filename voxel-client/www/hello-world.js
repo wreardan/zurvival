@@ -2,7 +2,9 @@ var createClient = require('../')
 var highlight = require('voxel-highlight')
 var extend = require('extend')
 var voxelPlayer = require('voxel-player')
+var voxelpp = require('voxel-pp')
 var game
+
 
 module.exports = function(opts, setup) {
   setup = setup || defaultSetup
@@ -30,7 +32,44 @@ module.exports = function(opts, setup) {
     var settings = game.settings.avatarInitialPosition
     avatar.position.set(settings[0],settings[1],settings[2])
     setup(game, avatar, client)
+
+
+    //try to add post-proc????
+  var postprocessor = voxelpp(game)
+  postprocessor.use([
+    "uniform sampler2D tDiffuse;",
+    "varying vec2 vUv;",
+    "void main() {",
+    "/*",
+    "dream vision vUvt effect",
+    "http://www.geeks3d.com/20091112/shader-library-dream-vision-vUvt-processing-filter-glsl/",
+    "*/",
+
+        "vec4 texColor = texture2D(tDiffuse, vUv);",
+
+        "texColor += texture2D(tDiffuse, vUv + 0.001);",
+        "texColor += texture2D(tDiffuse, vUv + 0.003);",
+        "texColor += texture2D(tDiffuse, vUv + 0.005);",
+        "texColor += texture2D(tDiffuse, vUv + 0.007);",
+        "texColor += texture2D(tDiffuse, vUv + 0.009);",
+        "texColor += texture2D(tDiffuse, vUv + 0.011);",
+
+        "texColor += texture2D(tDiffuse, vUv - 0.001);",
+        "texColor += texture2D(tDiffuse, vUv - 0.003);",
+        "texColor += texture2D(tDiffuse, vUv - 0.005);",
+        "texColor += texture2D(tDiffuse, vUv - 0.007);",
+        "texColor += texture2D(tDiffuse, vUv - 0.009);",
+        "texColor += texture2D(tDiffuse, vUv - 0.011);",
+
+        "texColor.rgb = vec3((texColor.r + texColor.g + texColor.b) / 3.0);",
+        "texColor = texColor / 9.5;",
+
+        "gl_FragColor = texColor;",
+    "}"
+    ].join("\n"))
+
   })
+
 
   return game
 }
