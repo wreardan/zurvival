@@ -10,6 +10,8 @@ var highlight = require('voxel-highlight')
 var skin = require('minecraft-skin')
 var player = require('voxel-player')
 var texturePath = "/textures/"
+var ClientCreature = require('./www/clientcreature.js')
+
 //var game
 
 //Setup Player object
@@ -129,7 +131,7 @@ Client.prototype.createGame = function(settings, game) {
   emitChat(name, emitter)
 
   // setTimeout is because three.js seems to throw errors if you add stuff too soon
-  setTimeout(function() {
+  setTimeout(function(game) {
     emitter.on('update', function(updates) {
       //Update players
       Object.keys(updates.positions).map(function(player) {
@@ -140,11 +142,15 @@ Client.prototype.createGame = function(settings, game) {
 
       //Update creatures
       for(var i = 0; i < updates.creatures.length; i++) {
-        creatures[i].updateFromBundle(updates.creatures[0])
+        if (i >= creatures.length) {
+          creatures.push(new ClientCreature(game, updates.creatures[i]))
+        } else {
+          creatures[i].updateFromBundle(updates.creatures[i])
+        }
       }
 
     })
-  }, 1000)
+  }, 1000, self.game)
 
   emitter.on('leave', function(id) {
     if (!self.others[id]) return

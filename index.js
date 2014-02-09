@@ -58,6 +58,7 @@ module.exports = function() {
   creature.position.z = 20
 
   creatures.push(creature)
+  creatures.push(new Creature(game))
 
   // simple version of socket.io's sockets.emit
   function broadcast(id, cmd, arg1, arg2, arg3) {
@@ -90,11 +91,12 @@ module.exports = function() {
 
     //players
     var update = {positions:{}, date: +new Date()}
+    var lastPlayer;
     clientKeys.map(function(key) {
       var player = clients[key].player
       //add to sleep if we haven't moved
       if(player.position.distanceTo(player.player.lastPosition) < 0.001)
-        player.player.sleep.add(0.001)
+        player.player.sleep.add(0.005)
       //update player and build broadcast
       var dead = false
       if(player.player.update() || player.position.y < -64) {
@@ -118,12 +120,13 @@ module.exports = function() {
       player.player.lastPosition = player.position.clone()
 
       //face towards last player to join
-      creatures[0].face(player)
+      lastPlayer = player;
     })
 
     //creatures
     update.creatures = []
     for(var i = 0; i < creatures.length; i++){
+      creatures[i].face(lastPlayer);
       creatures[i].update()
       update.creatures[i] = creatures[i].makeBundle()
     }

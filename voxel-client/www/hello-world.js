@@ -3,7 +3,7 @@ var highlight = require('voxel-highlight')
 var extend = require('extend')
 var voxelPlayer = require('voxel-player')
 var voxelpp = require('voxel-pp')
-var Creature = require('../../creature.js')
+var ClientCreature = require('./clientcreature.js')
 
 //var postprocessor
 
@@ -53,10 +53,11 @@ module.exports = function(opts, setup) {
     }
     shaderRequest.open("GET", "./postproc.fs")
     shaderRequest.send()
-    
-    var acreature = new Creature(game);
-    creatures.push(acreature)
 
+    client.emitter.on('creatureDestroy', function(index) {
+      var creature = creatures.splice(index, 1)[0];
+      game.scene.remove(creature.body);
+    })
 //initialize creature creation module
 /*
     createCreature = require('voxel-creature')(game)
@@ -126,17 +127,42 @@ function defaultSetup(game, avatar, client) {
   var currentMaterial = 1
 
   game.on('fire', function (target, state) {
-    var position = blockPosPlace
-    if (position) {
-      game.createBlock(position, currentMaterial)
-      client.emitter.emit('set', position, currentMaterial)
-    } else {
-      position = blockPosErase
-      if (position) {
-        game.setBlock(position, 0)
-        console.log("Erasing point at " + JSON.stringify(position))
-        client.emitter.emit('set', position, 0)
-      }
-    }
+    console.log("break");
+    
+    // var camera = game.camera;
+
+    // var vector = new game.THREE.Vector3(0,0,0.5);
+    // var projector = new game.THREE.Projector();
+    // projector.unprojectVector(vector, camera);
+    // console.log(JSON.stringify(vector));
+
+    // var raycaster = new game.THREE.Raycaster(camera.position, vector.sub(camera.position).normalize(), 0, 100000);
+    // //raycaster.ray.direction.set(vector.x, vector.y, vector.z)
+
+    // creatureMeshes = [];
+    // for (var c = 0; c < creatures.length; c++) {
+    //   creatureMeshes.push(creatures[c].body);
+    // }
+
+    // var intersects = raycaster.intersectObjects(creatureMeshes, true);
+
+    // if (intersects.length > 0) {
+    //     console.log('intersect: ' + intersects[0].point.x.toFixed(2) + ', ' + intersects[0].point.y.toFixed(2) + ', ' + intersects[0].point.z.toFixed(2) + ')');
+    // }
+    // else {
+    //     console.log('no intersect');
+    // }
+    // var position = blockPosPlace
+    // if (position) {
+    //   game.createBlock(position, currentMaterial)
+    //   client.emitter.emit('set', position, currentMaterial)
+    // } else {
+    //   position = blockPosErase
+    //   if (position) {
+    //     game.setBlock(position, 0)
+    //     console.log("Erasing point at " + JSON.stringify(position))
+    //     client.emitter.emit('set', position, 0)
+    //   }
+    // }
   })
 }
