@@ -92221,6 +92221,7 @@ function ClientCreature(game, bundle) {
 	this.THREE = game.THREE
 
 	this.createObject();
+	this.index = bundle.index;
 	this.updateFromBundle(bundle);
 }
 

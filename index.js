@@ -58,7 +58,6 @@ module.exports = function() {
   creature.position.z = 20
 
   creatures.push(creature)
-  creatures.push(new Creature(game))
 
   // simple version of socket.io's sockets.emit
   function broadcast(id, cmd, arg1, arg2, arg3) {
@@ -70,6 +69,9 @@ module.exports = function() {
   }
 
   function sendUpdate() {
+    if (Math.random() < 0.0005)
+      creatures.push(new Creature(game));
+
     var clientKeys = Object.keys(clients)
     if (clientKeys.length === 0) return
 
