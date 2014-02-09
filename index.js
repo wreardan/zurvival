@@ -21,8 +21,8 @@ module.exports = function() {
   // world on the server and will be sent to all
   // new clients when they connect
   var settings = {
-//  	generate: voxel.generator['Valley'],
-    generate: flatGenerator,
+  	generate: voxel.generator['Hilly Terrain'],
+    //generate: flatGenerator,
   	chunkDistance: 2,
     chunkSize: 32,
   	materials: [
@@ -34,7 +34,7 @@ module.exports = function() {
   	texturePath: texturePath,
   	worldOrigin: [0, 0, 0],
   	controls: { discreteFire: true },
-    avatarInitialPosition: [2, 20, 2],
+    avatarInitialPosition: [2, 50, 2],
     controlOptions: {jump: 1}
   }
   
