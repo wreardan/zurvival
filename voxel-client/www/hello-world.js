@@ -10,6 +10,8 @@ var Creature = require('../../creature.js')
 var game
 var createCreature
 
+creatures = []
+
 module.exports = function(opts, setup) {
   setup = setup || defaultSetup
   opts = extend({}, opts || {})
@@ -53,6 +55,7 @@ module.exports = function(opts, setup) {
     shaderRequest.send()
     
     var acreature = new Creature(game);
+    creatures.push(acreature)
 
 //initialize creature creation module
 /*

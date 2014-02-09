@@ -35,7 +35,7 @@ module.exports = function() {
   	texturePath: texturePath,
   	worldOrigin: [0, 0, 0],
   	controls: { discreteFire: true },
-    avatarInitialPosition: [2, 20, 2],
+    avatarInitialPosition: [2, 30, 2],
     controlOptions: {jump: 6},
     controls: {
       speed: 0.0032,
@@ -53,7 +53,11 @@ module.exports = function() {
 
   //initialize creature module
   var creature = new Creature(game)
-  //creatures.push(creature)
+  creature.position.x = 5
+  creature.position.y = 30
+  creature.position.z = 5
+
+  creatures.push(creature)
 
   // simple version of socket.io's sockets.emit
   function broadcast(id, cmd, arg1, arg2, arg3) {
@@ -66,6 +70,8 @@ module.exports = function() {
   function sendUpdate() {
     var clientKeys = Object.keys(clients)
     if (clientKeys.length === 0) return
+
+    //players
     var update = {positions:{}, date: +new Date()}
     clientKeys.map(function(key) {
       var emitter = clients[key]
@@ -78,11 +84,15 @@ module.exports = function() {
         },
         playerBundle: emitter.player.player.makeResourceBundle()
       }
+      creatures[0].face(emitter.player)
     })
+
+    //creatures
     update.creatures = []
     for(var i = 0; i < creatures.length; i++)
-      update.creatures[i] = creatures[i].makeBundle
+      update.creatures[i] = creatures[i].makeBundle()
     
+    //send out to all clients
     broadcast(false, 'update', update)
   }
 

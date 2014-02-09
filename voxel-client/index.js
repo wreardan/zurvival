@@ -130,12 +130,18 @@ Client.prototype.createGame = function(settings, game) {
 
   // setTimeout is because three.js seems to throw errors if you add stuff too soon
   setTimeout(function() {
-    emitter.on('update', function(updates) {      
+    emitter.on('update', function(updates) {
+      //Update players
       Object.keys(updates.positions).map(function(player) {
         var update = updates.positions[player]
         if (player === self.playerID) return self.onServerUpdate(update) // local player
         self.updatePlayerPosition(player, update) // other players
       })
+
+      //Update creatures
+      for(var i = 0; i < updates.creatures.length; i++)
+        creatures[i].updateFromBundle(updates.creatures[0])
+
     })
   }, 1000)
 
