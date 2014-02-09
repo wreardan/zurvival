@@ -27,9 +27,12 @@ Necessity.prototype.getValue = function() {
 
 /* calls onZero() if value < 0 */
 Necessity.prototype.update = function() {
-	if (this.getValue() <= 0 && this.onZero != undefined) {
-		this.onZero(this);
+	if (this.getValue() <= 0) {
+		if(this.onZero != undefined)
+			this.onZero(this);
+		return true
 	}
+	return false
 }
 
 Necessity.prototype.makeResourceBundle = function() {

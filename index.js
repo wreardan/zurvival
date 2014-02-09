@@ -91,17 +91,31 @@ module.exports = function() {
     //players
     var update = {positions:{}, date: +new Date()}
     clientKeys.map(function(key) {
-      var emitter = clients[key]
-      emitter.player.player.update()
-      update.positions[key] = {
-        position: emitter.player.position,
-        rotation: {
-          x: emitter.player.rotation.x,
-          y: emitter.player.rotation.y
-        },
-        playerBundle: emitter.player.player.makeResourceBundle()
+      var player = clients[key].player
+      //add to sleep if we haven't moved
+      if(player.position.distanceTo(player.player.lastPosition) < 0.001)
+        player.player.sleep.add(0.001)
+      //update player and build broadcast
+      if(player.player.update()) {
+        //player death, teleport to middleish
+        var x = Math.random()
+        var y = Math.random()
+        player.position.set(x, y, 30)
+        player.player.reset()
       }
-      creatures[0].face(emitter.player)
+      update.positions[key] = {
+        position: player.position,
+        rotation: {
+          x: player.rotation.x,
+          y: player.rotation.y
+        },
+        playerBundle: player.player.makeResourceBundle()
+      }
+      //update last position for sleep calculation
+      player.player.lastPosition = player.position.clone()
+
+      //face towards last player to join
+      creatures[0].face(player)
     })
 
     //creatures
@@ -162,6 +176,7 @@ module.exports = function() {
       position: new game.THREE.Vector3(),
       player: new Player()
     }
+    emitter.player.player.lastPosition = new game.THREE.Vector3(0,0,0)
 
     //creature.notice(emitter.player, { radius: 500 });
 

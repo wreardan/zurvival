@@ -5,16 +5,26 @@ function Player() {
 	this.init();
 }
 
-Player.prototype.init = function() {
+Player.prototype.reset = function() {
 	this.health = 100;
-	this.heat = new Necessity(6000, function(heat) {
+	this.heat = new Necessity(6000)
+	this.sleep = new Necessity(12000)
+}
+
+Player.prototype.init = function() {
+	this.reset()
+	/*
+	, function(heat) {
 		console.log("You died of hypothermia");
 		heat.fill();
 	});
-	this.sleep = new Necessity(12000, function(sleep) {
+*/
+	/*
+	, function(sleep) {
 		console.log("You died of exhaustion");
 		sleep.fill();
 	});
+*/
 	this.inventory = makeInventory();
 }
 
@@ -27,8 +37,13 @@ function makeInventory() {
 }
 
 Player.prototype.update = function() {
-	this.sleep.update();
-	this.heat.update();
+	//update
+	var flag = false
+	flag = this.sleep.update() || flag
+	flag = this.heat.update() || flag
+	flag = this.health <= 0 || flag
+	//Check for Death
+	return flag
 }
 
 Player.prototype.makeResourceBundle = function() {
