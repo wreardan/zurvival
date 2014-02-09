@@ -23,6 +23,7 @@ var sleepText = (sleepElement.firstElementChild||sleepElement.firstChild)
 var ClientPlayer = require('./www/clientplayer.js')
 var playerData = new ClientPlayer(healthText, heatText, sleepText)
 
+
 module.exports = Client
 
 function Client(server, game) {
@@ -77,7 +78,8 @@ Client.prototype.bindEvents = function(socket, game) {
 		settings.generate = eval("(" + settings.generatorToString + ")")
 	}
     self.game = self.createGame(settings, game)	
-	emitter.emit('created')
+	
+  emitter.emit('created')
     emitter.on('chunk', function(encoded, chunk) {
       var voxels = crunch.decode(encoded, chunk.length)
       chunk.voxels = voxels

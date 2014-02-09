@@ -3,6 +3,7 @@ var highlight = require('voxel-highlight')
 var extend = require('extend')
 var voxelPlayer = require('voxel-player')
 var voxelpp = require('voxel-pp')
+var Creature = require('../../creature.js')
 
 //var postprocessor
 
@@ -50,9 +51,42 @@ module.exports = function(opts, setup) {
     }
     shaderRequest.open("GET", "./postproc.fs")
     shaderRequest.send()
+    
+    var acreature = new Creature(game);
 
 //initialize creature creation module
+/*
     createCreature = require('voxel-creature')(game)
+
+    var creature = createCreature((function () {
+      var T = game.THREE
+      var body = new T.Object3D
+
+      var head = new T.Mesh(
+        new T.CubeGeometry(10, 10 10),
+        new T.MeshLambertMaterial({
+          color: 0x800830,
+          ambient: 0x800830
+        }));
+      head.position.set(0,5,0)
+      body.add(head)
+
+      var eyes = [0,1].map(function () {
+        var eye = new T.Mesh(
+          new T.CubeGeometry(1,1,1),
+          new T.MeshLambertMaterial({
+            color: 0x800830,
+            ambient: 0x800830
+          })
+        );
+        body.add(eye)
+        return eye
+      });
+      eyes[0].position.set(2,8,5)
+      eyes[1].position.set(-2,8,5)
+      return body
+    }))()
+*/
 
   })
 

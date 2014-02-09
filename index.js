@@ -10,6 +10,7 @@ var engine = require('voxel-engine')
 var texturePath = require('painterly-textures')(__dirname)
 var voxel = require('voxel')
 var Player = require('./player.js')
+var Creature = require('./creature.js')
 
 module.exports = function() {
 
@@ -23,7 +24,7 @@ module.exports = function() {
   var settings = {
 //  	generate: voxel.generator['Valley'],
     generate: flatGenerator,
-  	chunkDistance: 2,
+  	chunkDistance: 3,
     chunkSize: 32,
   	materials: [
   	['grass', 'dirt', 'grass_dirt'],
@@ -35,18 +36,24 @@ module.exports = function() {
   	worldOrigin: [0, 0, 0],
   	controls: { discreteFire: true },
     avatarInitialPosition: [2, 20, 2],
-    controlOptions: {jump: 1}
+    controlOptions: {jump: 6},
+    controls: {
+      speed: 0.0032,
+      jumpSpeed: 0.00016,
+    }
   }
   
   var game = engine(settings)
   var server = http.createServer(ecstatic(path.join(__dirname, 'voxel-client/www')))
   var wss = new WebSocketServer({server: server})
   var clients = {}
+  var creatures = []
   var chunkCache = {}
   var usingClientSettings
 
   //initialize creature module
-  createCreature = require('voxel-creature')(game)
+  var creature = new Creature(game)
+  //creatures.push(creature)
 
   // simple version of socket.io's sockets.emit
   function broadcast(id, cmd, arg1, arg2, arg3) {
@@ -69,12 +76,13 @@ module.exports = function() {
           x: emitter.player.rotation.x,
           y: emitter.player.rotation.y
         },
-        health: 101,
-        heat: 100,
-        sleep: 99,
         playerBundle: emitter.player.player.makeResourceBundle()
       }
     })
+    update.creatures = []
+    for(var i = 0; i < creatures.length; i++)
+      update.creatures[i] = creatures[i].makeBundle
+    
     broadcast(false, 'update', update)
   }
 
@@ -126,6 +134,8 @@ module.exports = function() {
       position: new game.THREE.Vector3(),
       player: new Player()
     }
+
+    //creature.notice(emitter.player, { radius: 500 });
 
     console.log(id, 'joined')
     emitter.emit('id', id)
