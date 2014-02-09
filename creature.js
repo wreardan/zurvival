@@ -96,4 +96,12 @@ Creature.prototype.updateFromBundle = function(bundle) {
 	this.body.rotation.y = this.rotation
 }
 
+Creature.prototype.distanceTo = function(position) {
+	var dx = position.x - this.position.x
+	var dy = position.y - this.position.y
+	var dz = position.z - this.position.z
+	var dist = Math.sqrt(dx*dx + dy*dy + dz*dz)
+	return dist
+}
+
 module.exports = Creature

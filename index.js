@@ -53,9 +53,9 @@ module.exports = function() {
 
   //initialize creature module
   var creature = new Creature(game)
-  creature.position.x = 5
+  creature.position.x = 20
   creature.position.y = 30
-  creature.position.z = 5
+  creature.position.z = 20
 
   creatures.push(creature)
 
@@ -70,6 +70,22 @@ module.exports = function() {
   function sendUpdate() {
     var clientKeys = Object.keys(clients)
     if (clientKeys.length === 0) return
+
+    //check player distances to creatures
+    clientKeys.map(function(key) {
+      var player = clients[key].player
+      for(var i = 0; i < creatures.length; i++) {
+//        try {
+          var creature = creatures[i]
+ //         if(creature !== null && creature !== undefined)
+          var dist = creature.distanceTo(player.position)
+//          console.log("distance", dist)
+          if(dist < 6.0) {
+            player.player.health -= 3
+          }
+//        } catch (e) {}
+      }
+    })
 
     //players
     var update = {positions:{}, date: +new Date()}
