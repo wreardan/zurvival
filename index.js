@@ -63,7 +63,8 @@ module.exports = function() {
   function broadcast(id, cmd, arg1, arg2, arg3) {
     Object.keys(clients).map(function(client) {
       if (client === id) return
-      clients[client].emit(cmd, arg1, arg2, arg3)
+      if (clients[client].readyState === websocket.OPEN)
+        clients[client].emit(cmd, arg1, arg2, arg3)
     })
   }
 
