@@ -89,9 +89,10 @@ module.exports = function() {
 
     //creatures
     update.creatures = []
-    for(var i = 0; i < creatures.length; i++)
+    for(var i = 0; i < creatures.length; i++){
+      creatures[i].update()
       update.creatures[i] = creatures[i].makeBundle()
-    
+    }
     //send out to all clients
     broadcast(false, 'update', update)
   }

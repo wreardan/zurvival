@@ -139,8 +139,9 @@ Client.prototype.createGame = function(settings, game) {
       })
 
       //Update creatures
-      for(var i = 0; i < updates.creatures.length; i++)
+      for(var i = 0; i < updates.creatures.length; i++) {
         creatures[i].updateFromBundle(updates.creatures[0])
+      }
 
     })
   }, 1000)

@@ -47,12 +47,27 @@ Creature.prototype.createObject = function() {
     eyes[0].position.set(1, 4, 2.5);
     eyes[1].position.set(-1, 4, 2.5);
 
-    this.body = body
-    this.game.scene.add(body)
+    //drawable object
+	this.body = body
+	this.game.scene.add(body)
+
+	//setup physics
+/*
+	var dims = new T.Vector3(5,5,5)
+	var force = new T.Vector3(0, -0.00009, 0)
+	this.physics = game.makePhysical(body, dims)
+	this.physics.subjectTo(force)
+*/
+}
+
+Creature.prototype.move = function(x, y, z) {
+	
 }
 
 Creature.prototype.update = function() {
-	
+	var scalar = 0.1
+	this.position.x += Math.sin(this.rotation) * scalar
+	this.position.z += Math.cos(this.rotation) * scalar
 }
 
 Creature.prototype.face = function(obj) {
