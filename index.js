@@ -22,8 +22,8 @@ module.exports = function() {
   // world on the server and will be sent to all
   // new clients when they connect
   var settings = {
-//  	generate: voxel.generator['Valley'],
-    generate: flatGenerator,
+  	generate: voxel.generator['Hilly Terrain'],
+    //generate: flatGenerator,
   	chunkDistance: 3,
     chunkSize: 32,
   	materials: [

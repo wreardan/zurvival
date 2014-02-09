@@ -15,9 +15,9 @@ uniform float time;
 void main() {
   vec4 texColor = texture2D(tDiffuse, vUv); //original pixel color
   gl_FragColor = texColor;
-  if(frostvision > 0.5){
+  if((frostvision > 0.5)){
     vec4 texColorFrost = texture2D(tDiffuse, vec2(clamp(vUv.x + sin(2.0 * (frostvision - 0.5) * time)/100.0, 0.0, 1.0), vUv.y)); //shake the screen - shivering???
-    gl_FragColor = mix(texColorFrost, vec4(0.5, 0.5, 1.0, texColorFrost.a), (frostvision-0.5)/1.5);
+    gl_FragColor = mix(texColorFrost, vec4(0.5, 0.5, 1.0, texColorFrost.a), (frostvision-0.5)*1.5);
   }
   if(dreamvision > 0.3){
     vec4 texColorDream = texColor;
