@@ -15,7 +15,7 @@ Necessity.prototype.fill = function() {
 /* adds a percentage to the count */
 Necessity.prototype.add = function(amount) {
 	this.lastTimeRefreshed =
-		Math.max(
+		Math.min(
 			this.lastTimeRefreshed + Math.ceil(this.timeToDeplete * amount),
 			Date.now());
 }

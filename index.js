@@ -24,8 +24,8 @@ module.exports = function() {
   var settings = {
   	generate: voxel.generator['Hilly Terrain'],
     //generate: flatGenerator,
-  	chunkDistance: 3,
-    chunkSize: 32,
+  	chunkDistance: 2,
+    chunkSize: 64,
   	materials: [
   	['grass', 'dirt', 'grass_dirt'],
   	'obsidian',
@@ -97,7 +97,7 @@ module.exports = function() {
         player.player.sleep.add(0.001)
       //update player and build broadcast
       var dead = false
-      if(player.player.update()) {
+      if(player.player.update() || player.position.y < -64) {
         //player death, teleport to middleish
         var x = Math.random() * 64
         var z = Math.random() * 64

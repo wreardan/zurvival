@@ -65,7 +65,7 @@ Creature.prototype.move = function(x, y, z) {
 }
 
 Creature.prototype.update = function() {
-	var scalar = 0.1
+	var scalar = 0.2
 	this.position.x += Math.sin(this.rotation) * scalar
 	this.position.z += Math.cos(this.rotation) * scalar
 }
@@ -98,9 +98,9 @@ Creature.prototype.updateFromBundle = function(bundle) {
 
 Creature.prototype.distanceTo = function(position) {
 	var dx = position.x - this.position.x
-	var dy = position.y - this.position.y
+	var dy = position.y - this.position.y	//not currently used
 	var dz = position.z - this.position.z
-	var dist = Math.sqrt(dx*dx + dy*dy + dz*dz)
+	var dist = Math.sqrt(dx*dx + dz*dz)
 	return dist
 }
 

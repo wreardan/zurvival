@@ -7,8 +7,8 @@ function Player() {
 
 Player.prototype.reset = function() {
 	this.health = 100;
-	this.heat = new Necessity(6000)
-	this.sleep = new Necessity(12000)
+	this.heat = new Necessity(120000)
+	this.sleep = new Necessity(180000)
 }
 
 Player.prototype.init = function() {

@@ -66,7 +66,7 @@ Creature.prototype.move = function(x, y, z) {
 }
 
 Creature.prototype.update = function() {
-	var scalar = 0.1
+	var scalar = 0.2
 	this.position.x += Math.sin(this.rotation) * scalar
 	this.position.z += Math.cos(this.rotation) * scalar
 }
@@ -99,9 +99,9 @@ Creature.prototype.updateFromBundle = function(bundle) {
 
 Creature.prototype.distanceTo = function(position) {
 	var dx = position.x - this.position.x
-	var dy = position.y - this.position.y
+	var dy = position.y - this.position.y	//not currently used
 	var dz = position.z - this.position.z
-	var dist = Math.sqrt(dx*dx + dy*dy + dz*dz)
+	var dist = Math.sqrt(dx*dx + dz*dz)
 	return dist
 }
 
@@ -124,7 +124,7 @@ Necessity.prototype.fill = function() {
 /* adds a percentage to the count */
 Necessity.prototype.add = function(amount) {
 	this.lastTimeRefreshed =
-		Math.max(
+		Math.min(
 			this.lastTimeRefreshed + Math.ceil(this.timeToDeplete * amount),
 			Date.now());
 }
@@ -167,8 +167,8 @@ function Player() {
 
 Player.prototype.reset = function() {
 	this.health = 100;
-	this.heat = new Necessity(6000)
-	this.sleep = new Necessity(12000)
+	this.heat = new Necessity(120000)
+	this.sleep = new Necessity(180000)
 }
 
 Player.prototype.init = function() {
