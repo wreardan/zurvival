@@ -165,6 +165,10 @@ Client.prototype.onServerUpdate = function(update) {
   heatText.innerHTML = heat.toString()
 
   var sleep = update.sleep*/
+  if(update.dead) {
+    var position = this.game.controls.target().position
+    position.set(update.position.x, update.position.y, update.position.z)
+  }
 
   playerData.updateFromBundle(update.playerBundle)
   playerData.update()

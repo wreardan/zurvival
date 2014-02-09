@@ -96,15 +96,18 @@ module.exports = function() {
       if(player.position.distanceTo(player.player.lastPosition) < 0.001)
         player.player.sleep.add(0.001)
       //update player and build broadcast
+      var dead = false
       if(player.player.update()) {
         //player death, teleport to middleish
-        var x = Math.random()
-        var y = Math.random()
-        player.position.set(x, y, 30)
+        var x = Math.random() * 64
+        var z = Math.random() * 64
+        player.position.set(x, 32, z)
         player.player.reset()
+        dead = true
       }
       update.positions[key] = {
         position: player.position,
+        dead: dead,
         rotation: {
           x: player.rotation.x,
           y: player.rotation.y
