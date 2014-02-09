@@ -8,7 +8,6 @@ function Player() {
 Player.prototype.reset = function() {
 	this.spawnTime = Date.now();
 	this.health = 10000;
-	this.heat = new Necessity(120000)
 	this.sleep = new Necessity(30000)
 }
 
@@ -41,7 +40,6 @@ Player.prototype.update = function() {
 	//update
 	var flag = false
 	flag = this.sleep.update() || flag
-	flag = this.heat.update() || flag
 	flag = this.health <= 0 || flag
 	//Check for Death
 	return flag
@@ -50,7 +48,6 @@ Player.prototype.update = function() {
 Player.prototype.makeResourceBundle = function() {
 	var bundle = {};
 	bundle.health = this.health;
-	bundle.heat = this.heat.makeResourceBundle();
 	bundle.sleep = this.sleep.makeResourceBundle();
 	bundle.inventory = this.inventory.slice(0);
 	bundle.timeAlive = Date.now() - this.spawnTime;
@@ -59,7 +56,6 @@ Player.prototype.makeResourceBundle = function() {
 
 Player.prototype.updateFromBundle = function(bundle) {
 	this.health = bundle.health;
-	this.heat.updateFromBundle(bundle.heat);
 	this.sleep.updateFromBundle(bundle.sleep);
 	this.inventory = bundle.inventory;
 	this.spawnTime = Date.now() - bundle.timeAlive;

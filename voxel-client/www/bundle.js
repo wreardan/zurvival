@@ -7094,7 +7094,6 @@ function Player() {
 Player.prototype.reset = function() {
 	this.spawnTime = Date.now();
 	this.health = 10000;
-	this.heat = new Necessity(120000)
 	this.sleep = new Necessity(30000)
 }
 
@@ -7127,7 +7126,6 @@ Player.prototype.update = function() {
 	//update
 	var flag = false
 	flag = this.sleep.update() || flag
-	flag = this.heat.update() || flag
 	flag = this.health <= 0 || flag
 	//Check for Death
 	return flag
@@ -7136,7 +7134,6 @@ Player.prototype.update = function() {
 Player.prototype.makeResourceBundle = function() {
 	var bundle = {};
 	bundle.health = this.health;
-	bundle.heat = this.heat.makeResourceBundle();
 	bundle.sleep = this.sleep.makeResourceBundle();
 	bundle.inventory = this.inventory.slice(0);
 	bundle.timeAlive = Date.now() - this.spawnTime;
@@ -7145,7 +7142,6 @@ Player.prototype.makeResourceBundle = function() {
 
 Player.prototype.updateFromBundle = function(bundle) {
 	this.health = bundle.health;
-	this.heat.updateFromBundle(bundle.heat);
 	this.sleep.updateFromBundle(bundle.sleep);
 	this.inventory = bundle.inventory;
 	this.spawnTime = Date.now() - bundle.timeAlive;
@@ -7222,15 +7218,13 @@ var ClientCreature = require('./www/clientcreature.js')
 //Setup Player object
 var healthElement = document.getElementById("health")
 var healthText = (healthElement.firstElementChild||healthElement.firstChild)
-var heatElement = document.getElementById("heat")
-var heatText = (heatElement.firstElementChild||heatElement.firstChild)
 var sleepElement = document.getElementById("sleep")
 var sleepText = (sleepElement.firstElementChild||sleepElement.firstChild)
 var timeElement = document.getElementById("time")
 var timeText = (timeElement.firstElementChild||timeElement.firstChild)
 
 var ClientPlayer = require('./www/clientplayer.js')
-var playerData = new ClientPlayer(healthText, heatText, sleepText, timeText)
+var playerData = new ClientPlayer(healthText, sleepText, timeText)
 
 
 module.exports = Client
@@ -7371,13 +7365,7 @@ Client.prototype.createGame = function(settings, game) {
 Client.prototype.onServerUpdate = function(update) {
   // todo use server sent location
 
-  //update necessities
-  /*var heat = update.heat
-  var heatElement = document.getElementById("heat")
-  var heatText = (heatElement.firstElementChild||heatElement.firstChild)
-  heatText.innerHTML = heat.toString()
-
-  var sleep = update.sleep*/
+  
   if(update.dead) {
     var position = this.game.controls.target().position
     position.set(update.position.x, update.position.y, update.position.z)
@@ -92307,10 +92295,9 @@ module.exports = ClientNecessity;
 var Player = require('../../player.js');
 var ClientNecessity = require('./clientnecessity.js');
 
-function ClientPlayer(healthEl, heatEl, sleepEl, timeEl) {
+function ClientPlayer(healthEl, sleepEl, timeEl) {
 	Player.call(this); //call superconstructor
 	this.healthEl = healthEl;
-	this.heat = new ClientNecessity(this.heat, heatEl);
 	this.sleep = new ClientNecessity(this.sleep, sleepEl);
 	this.timeEl = timeEl;
 
@@ -92326,7 +92313,6 @@ ClientPlayer.prototype.update = function() {
 	try {
 		postprocessor.passes[1].uniforms.dreamvision.value = 1.0-this.sleep.getValue();
 		postprocessor.passes[1].uniforms.bloodvision.value = 1.0 - this.health/100;
-		postprocessor.passes[1].uniforms.frostvision.value = 1.0-this.heat.getValue();
 		postprocessor.passes[1].uniforms.time.value = (Date.now()) / 100.0;
 	} catch(e) {}
 

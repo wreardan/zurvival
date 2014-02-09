@@ -17,15 +17,13 @@ var ClientCreature = require('./www/clientcreature.js')
 //Setup Player object
 var healthElement = document.getElementById("health")
 var healthText = (healthElement.firstElementChild||healthElement.firstChild)
-var heatElement = document.getElementById("heat")
-var heatText = (heatElement.firstElementChild||heatElement.firstChild)
 var sleepElement = document.getElementById("sleep")
 var sleepText = (sleepElement.firstElementChild||sleepElement.firstChild)
 var timeElement = document.getElementById("time")
 var timeText = (timeElement.firstElementChild||timeElement.firstChild)
 
 var ClientPlayer = require('./www/clientplayer.js')
-var playerData = new ClientPlayer(healthText, heatText, sleepText, timeText)
+var playerData = new ClientPlayer(healthText, sleepText, timeText)
 
 
 module.exports = Client
@@ -166,13 +164,7 @@ Client.prototype.createGame = function(settings, game) {
 Client.prototype.onServerUpdate = function(update) {
   // todo use server sent location
 
-  //update necessities
-  /*var heat = update.heat
-  var heatElement = document.getElementById("heat")
-  var heatText = (heatElement.firstElementChild||heatElement.firstChild)
-  heatText.innerHTML = heat.toString()
-
-  var sleep = update.sleep*/
+  
   if(update.dead) {
     var position = this.game.controls.target().position
     position.set(update.position.x, update.position.y, update.position.z)
