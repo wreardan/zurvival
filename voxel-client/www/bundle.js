@@ -7092,6 +7092,7 @@ function Player() {
 }
 
 Player.prototype.reset = function() {
+	this.spawnTime = Date.now();
 	this.health = 10000;
 	this.heat = new Necessity(120000)
 	this.sleep = new Necessity(30000)
@@ -7138,6 +7139,7 @@ Player.prototype.makeResourceBundle = function() {
 	bundle.heat = this.heat.makeResourceBundle();
 	bundle.sleep = this.sleep.makeResourceBundle();
 	bundle.inventory = this.inventory.slice(0);
+	bundle.timeAlive = Date.now() - this.spawnTime;
 	return bundle;
 }
 
@@ -7146,6 +7148,7 @@ Player.prototype.updateFromBundle = function(bundle) {
 	this.heat.updateFromBundle(bundle.heat);
 	this.sleep.updateFromBundle(bundle.sleep);
 	this.inventory = bundle.inventory;
+	this.spawnTime = Date.now() - bundle.timeAlive;
 }
 
 module.exports = Player
@@ -7223,9 +7226,11 @@ var heatElement = document.getElementById("heat")
 var heatText = (heatElement.firstElementChild||heatElement.firstChild)
 var sleepElement = document.getElementById("sleep")
 var sleepText = (sleepElement.firstElementChild||sleepElement.firstChild)
+var timeElement = document.getElementById("time")
+var timeText = (timeElement.firstElementChild||timeElement.firstChild)
 
 var ClientPlayer = require('./www/clientplayer.js')
-var playerData = new ClientPlayer(healthText, heatText, sleepText)
+var playerData = new ClientPlayer(healthText, heatText, sleepText, timeText)
 
 
 module.exports = Client
@@ -92302,11 +92307,12 @@ module.exports = ClientNecessity;
 var Player = require('../../player.js');
 var ClientNecessity = require('./clientnecessity.js');
 
-function ClientPlayer(healthEl, heatEl, sleepEl) {
+function ClientPlayer(healthEl, heatEl, sleepEl, timeEl) {
 	Player.call(this); //call superconstructor
 	this.healthEl = healthEl;
 	this.heat = new ClientNecessity(this.heat, heatEl);
 	this.sleep = new ClientNecessity(this.sleep, sleepEl);
+	this.timeEl = timeEl;
 
 }
 
@@ -92314,16 +92320,14 @@ ClientPlayer.prototype = new Player();
 
 ClientPlayer.prototype.update = function() {
 	this.healthEl.innerHTML = ""+this.health;
+	this.timeEl.innerHTML = ""+Math.floor(Date.now() - this.spawnTime)/100;
 	Player.prototype.update.call(this);
 
 	try {
 		postprocessor.passes[1].uniforms.dreamvision.value = 1.0-this.sleep.getValue();
 		postprocessor.passes[1].uniforms.bloodvision.value = 1.0 - this.health/100;
 		postprocessor.passes[1].uniforms.frostvision.value = 1.0-this.heat.getValue();
-		//Not sure if this should go here???
-		var d = new Date();
-		postprocessor.passes[1].uniforms.time.value = (d.getTime()) / 100.0;
-		delete d; //probably a bad way to do this???
+		postprocessor.passes[1].uniforms.time.value = (Date.now()) / 100.0;
 	} catch(e) {}
 
 }

@@ -6,6 +6,7 @@ function Player() {
 }
 
 Player.prototype.reset = function() {
+	this.spawnTime = Date.now();
 	this.health = 10000;
 	this.heat = new Necessity(120000)
 	this.sleep = new Necessity(30000)
@@ -52,6 +53,7 @@ Player.prototype.makeResourceBundle = function() {
 	bundle.heat = this.heat.makeResourceBundle();
 	bundle.sleep = this.sleep.makeResourceBundle();
 	bundle.inventory = this.inventory.slice(0);
+	bundle.timeAlive = Date.now() - this.spawnTime;
 	return bundle;
 }
 
@@ -60,6 +62,7 @@ Player.prototype.updateFromBundle = function(bundle) {
 	this.heat.updateFromBundle(bundle.heat);
 	this.sleep.updateFromBundle(bundle.sleep);
 	this.inventory = bundle.inventory;
+	this.spawnTime = Date.now() - bundle.timeAlive;
 }
 
 module.exports = Player
