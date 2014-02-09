@@ -128,9 +128,7 @@ module.exports = function() {
     //creatures
     update.creatures = []
     for(var i = 0; i < creatures.length; i++){
-      var index = clientKeys[i % clientKeys.length]
-      var player = clients[index]
-      creatures[i].face(player);
+      creatures[i].face(lastPlayer);
       creatures[i].update()
       update.creatures[i] = creatures[i].makeBundle()
     }
